@@ -72,8 +72,9 @@ const Sheet = (props) => {
     const [Name, setName] = useState('')
     const [Pass, setPass] = useState('')
 
-    useEffect(() => {
-
+    useEffect(async () => {
+        const { data } = await Axios.get('/getEditor/All')
+        setCheck(data)
     }, [])
 
     const handleOpen = (e) => {
@@ -101,30 +102,29 @@ const Sheet = (props) => {
         })
     }
 
+
+
     const handleClickOpen = async (e) => {
         const label = e.currentTarget.ariaLabel
-        const tmp = []
-        await sheetList.map((x) => {
-            tmp.push({ [x[1]]: false })
-        })
-        setList(tmp)
+        const tmpArr = []
 
-
-        await editorList.map(x => {
-            const { email, sheetName } = x;
-            if (email == label) {
-                sheetName.forEach(el => {
-                    const val = el.split('-')[0].trim();
-                    list.map((y) => {
-                        if (Object.keys(y)[0] == val) {
-                            y[val] = true
-                            console.log(Object.values(y))
+        sheetList.map((e, elem) => {
+            console.log(elem)
+            check.map((x, index) => {
+                const { email, sheetName } = x;
+                if (email == label) {
+                    sheetName.map((el, i) => {
+                        const val = el.split('-')[0].trim();
+                        if (e[1] == val) {
+                            tmpArr.push({ [e[1]]: true })
+                        } else if (e[1] != val) {
+                            tmpArr.push({ [e[1]]: false })
                         }
-                    })
-                });
-            }
+                    });
+                }
+            })
         })
-
+        setList(tmpArr);
         setOpen(true);
     };
 
@@ -204,10 +204,15 @@ const Sheet = (props) => {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         <FormGroup row>
-                            <FormControlLabel
-                                control={<Checkbox checked={false} name="station" />}
-                                label="Secondary"
-                            />
+                            {list.map((x, i) => (
+                                <div key={i} aria-label={x[Object.keys(x)[0]]}>
+                                    <FormControlLabel
+                                        control={<Checkbox checked={x[Object.keys(x)[0]]} name="station" />}
+                                        label={Object.keys(x)[0]}
+                                    />
+                                    <br />
+                                </div>
+                            ))}
                         </FormGroup>
                     </DialogContentText>
                 </DialogContent>
