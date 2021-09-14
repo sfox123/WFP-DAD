@@ -57,8 +57,9 @@ const Nav = () => {
                             <img src={logo} alt="logo" className='Nav__logo' />
                         </a>
                     </div>
-                    <div onClick={handleClick} id={6} className="login">
 
+                    <div >
+                        <button onClick={handleClick} id={6} className="login">LOGIN</button>
                     </div>
                 </div>
                 <div className="bar">
@@ -72,13 +73,13 @@ const Nav = () => {
                     </div>
                 </div>
                 <div>
-                    {active == 0 ? <Agromet /> : null}
-                    {active == 3 ? <Drought /> : null}
-                    {active == 2 ? <Rainfall /> : null}
-                    {active == 1 ? <Tank /> : null}
-                    {active == 4 ? <Weather /> : null}
-                    {active == 5 ? <Forecast /> : null}
-                    {active == 6 ? <Login /> : null}
+                    {active == 0 && <Agromet />}
+                    {active == 3 && <Drought />}
+                    {active == 2 && <Rainfall />}
+                    {active == 1 && <Tank />}
+                    {active == 4 && <Weather />}
+                    {active == 5 && <Forecast />}
+                    {active == 6 && <Login />}
                 </div>
             </div>
         </>

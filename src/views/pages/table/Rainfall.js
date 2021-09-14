@@ -31,19 +31,13 @@ const useStyles = makeStyles({
   },
 });
 
-function createData(rainfall, dateMeasured, dateRecorded) {
-  return { rainfall, dateMeasured, dateRecorded };
-}
-
-function createInfo(wLevel, wCapacity, dateMeasured, dateRecorded) {
-  return { wLevel, wCapacity, dateMeasured, dateRecorded };
-}
-
 export default function Rainfall(props) {
   const { id, sheetList, email, rainCheck, tankCheck } = props;
   const classes = useStyles();
   const [load, setLoad] = useState(true);
   const [apiData, setApiData] = useState([]);
+  const [rain, setRain] = useState(true);
+  const [tank, setTank] = useState(false);
   const [rows, setRows] = useState([]);
   const [cols, setCols] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -68,21 +62,48 @@ export default function Rainfall(props) {
     const { rainfall, tankwater } = data;
 
     setApiData(data);
+    const tmp = [];
+    const arr = [];
+
     if (rainCheck) {
       rainfall.map((x, i) => {
-        if (x[5][3] == email && Object.keys(x).length > 5) {
-          rows.push(createData(x[5][2], x[5][0], x[5][1]));
+        if (Object.keys(x).length > 5) {
+          Object.keys(x).map((key, index) => {
+            if (index > 4) {
+              if (email == x[index][3]) {
+                tmp.push({
+                  ["rainfall"]: x[index][2],
+                  ["dateMeasured"]: x[index][0],
+                  ["dateRecorded"]: x[index][1],
+                });
+              }
+            }
+          });
         }
       });
 
+      setRows(tmp);
       if (tankCheck) {
         tankwater.map((x, i) => {
-          if (x[5][3] == email && Object.keys(x).length > 5) {
-            cols.push(createInfo(x[5][2], x[5][1], x[5][1], x[5][0]));
+          let length = Object.keys(x).length;
+          if (Object.keys(x).length > 5) {
+            Object.keys(x).map((key, index) => {
+              if (index > 4) {
+                if (email == x[index][4]) {
+                  arr.push({
+                    ["wLevel"]: x[index][2],
+                    ["wCapacity"]: x[index][3],
+                    ["dateMeasured"]: x[index][1],
+                    ["dateRecorded"]: x[index][0],
+                  });
+                }
+              }
+            });
           }
         });
       }
     }
+    setCols(arr);
     setLoad(false);
   }, []);
 
@@ -90,7 +111,16 @@ export default function Rainfall(props) {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = (e) => {
+    const value = e.target.ariaLabel;
+    if (value == "rain") {
+      setRain(!rain);
+      setTank(!tank);
+    } else if (value == "tank") {
+      setTank(!tank);
+      setRain(!rain);
+    }
+
     setAnchorEl(null);
   };
 
@@ -122,35 +152,76 @@ export default function Rainfall(props) {
               open={Boolean(anchorEl)}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Rainfall</MenuItem>
-              <MenuItem onClick={handleClose}>Tankwater</MenuItem>
+              {rainCheck && (
+                <MenuItem aria-label="rain" onClick={handleClose}>
+                  Rainfall
+                </MenuItem>
+              )}
+              {tankCheck && (
+                <MenuItem aria-label="tank" onClick={handleClose}>
+                  Tankwater
+                </MenuItem>
+              )}
             </Menu>
           </div>
-          <TableContainer
-            className={`${classes.table} ${classes.mLeft} ${classes.mTop}`}
-            component={Paper}
-          >
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Rainfall (mm)</TableCell>
-                  <TableCell align="right">Date Measured</TableCell>
-                  <TableCell align="right">Date Recorded</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={uuid()}>
-                    <TableCell component="th" scope="row">
-                      {row.rainfall}
-                    </TableCell>
-                    <TableCell align="right">{row.dateRecorded}</TableCell>
-                    <TableCell align="right">{row.dateMeasured}</TableCell>
+          {rain && (
+            <TableContainer
+              className={`${classes.table} ${classes.mLeft} ${classes.mTop}`}
+              component={Paper}
+            >
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Rainfall (mm)</TableCell>
+                    <TableCell align="right">Date Measured</TableCell>
+                    <TableCell align="right">Date Recorded</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={uuid()}>
+                      <TableCell component="th" scope="row">
+                        {row.rainfall}
+                      </TableCell>
+                      <TableCell align="right">{row.dateRecorded}</TableCell>
+                      <TableCell align="right">{row.dateMeasured}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+          {tank && (
+            <TableContainer
+              className={`${classes.table} ${classes.mLeft} ${classes.mTop}`}
+              component={Paper}
+            >
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Water Level (ft)</TableCell>
+                    <TableCell>Water Capacity (Ac.ft)</TableCell>
+                    <TableCell align="right">Date Measured</TableCell>
+                    <TableCell align="right">Date Recorded</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {cols.map((row) => (
+                    <TableRow key={uuid()}>
+                      <TableCell component="th" scope="row">
+                        {row.wLevel}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
+                        {row.wCapacity}
+                      </TableCell>
+                      <TableCell align="right">{row.dateRecorded}</TableCell>
+                      <TableCell align="right">{row.dateMeasured}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </>
       )}
     </>

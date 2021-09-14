@@ -90,10 +90,9 @@ const Editor = () => {
             ...formData,
             ['stationName']: 'rainFall'
         })
-        await Axios.get(`/editorFetch/${cookies.EditorID}`).then(res => {
-            setEditor(res.data);
-            setLoad(false)
-        }).catch(err => console.error(err))
+        const { data } = await Axios.get(`/editorFetch/${cookies.EditorID}`)
+        setEditor(data);
+        setLoad(false)
     }, [])
     const handleClose = () => {
         setOpen(false)
@@ -148,113 +147,112 @@ const Editor = () => {
                     <button onClick={handleLogout} className='asc__btn m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Logout</button>
                 </div>
             </div>
-            {load ?
-
-                <div style={{ margin: '0 auto', display: 'grid', placeContent: 'center' }}>
-                    <CircularProgress />
-                </div>
-                :
-                rainFall[0] ?
-                    <form action="#" method="post" onSubmit={handleSubmit}>
-                        <div style={{ marginLeft: '2rem' }} className="drought__radio">
+            {load && <CircularProgress />}
+            {!load &&
+                <form action="#" method="post" onSubmit={handleSubmit}>
+                    <div style={{ marginLeft: '2rem' }} className="drought__radio">
+                        {rainFall[0] ?
                             <div className="drought__radio__group">
                                 <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='rainFall' name="stationName" id="rainFall" />
                                 <label htmlFor="rainFall" className='radio__label'>
                                     <span className="radio__btn checkTwo radio__selected"></span>
                                     RainFall
                                 </label>
-                            </div>
-                            {tankWater[0] &&
+                            </div> : null}
+                        {tankWater[0] ?
 
-                                <div className="drought__radio__group">
-                                    <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='tankWater' name="stationName" id="tankWater" />
-                                    <label htmlFor="tankWater" className='radio__label'>
-                                        <span className="radio__btn"></span>
-                                        Tank Water
-                                    </label>
-                                </div>
-                            }
                             <div className="drought__radio__group">
-                                <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='addedList' name="stationName" id="addedList" />
-                                <label htmlFor="addedList" className='radio__label'>
-                                    <span className="radio__btn checkTwo"></span>
-                                    Records
+                                <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='tankWater' name="stationName" id="tankWater" />
+                                <label htmlFor="tankWater" className='radio__label'>
+                                    {rainFall[0] ?
+                                        <span className="radio__btn"></span>
+                                        :
+                                        <span className="radio__btn checkTwo radio__selected"></span>
+                                    }
+                                    Tank Water
                                 </label>
                             </div>
+                            : null}
+                        <div className="drought__radio__group">
+                            <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='addedList' name="stationName" id="addedList" />
+                            <label htmlFor="addedList" className='radio__label'>
+                                <span className="radio__btn checkTwo"></span>
+                                Records
+                            </label>
                         </div>
-                        {formData['stationName'] == 'rainFall' &&
-                            <div className="m-top admin__header">
-                                <h3>Create Record</h3>
-                                <div className="form__control">
-                                    <input onChange={handleData} placeholder='Rainfall (mm)' type="text" className='form__input' name="rainfall" required />
-                                    <label className='form__label' style={{ marginBottom: '2rem' }} htmlFor="name">Rainfall (mm)</label>
-                                </div>
-                                <h3>Date Measured</h3>
-                                <div className="form__control">
-                                    <Calendar onChange={setDate} value={date} />
-                                </div>
-                                <div style={{ marginTop: '2rem' }}>
-                                    <Button variant='contained' color='primary' aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-                                        {sheet}
-                                    </Button>
-                                    <Menu
-                                        id="simple-menu"
-                                        anchorEl={anchorEl}
-                                        keepMounted
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleCloseMenu}
-                                    >
-                                        <RainList />
-                                    </Menu>
-                                </div>
-                                <div className="btn__box">
-                                    <button aria-current={rainFall[1]} type='submit' aria-label='rainFall' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
-                                </div>
+                    </div>
+                    {formData['stationName'] == 'rainFall' &&
+                        <div className="m-top admin__header">
+                            <h3>Create Record</h3>
+                            <div className="form__control">
+                                <input onChange={handleData} placeholder='Rainfall (mm)' type="text" className='form__input' name="rainfall" required />
+                                <label className='form__label' style={{ marginBottom: '2rem' }} htmlFor="name">Rainfall (mm)</label>
                             </div>
-                        }
-                        {formData['stationName'] == 'tankWater' &&
-                            <div className="m-top admin__header">
-                                <h3>Create Record</h3>
-                                <div className="form__control">
-                                    <input onChange={handleData} placeholder='Water Level (ft)' type="text" className='form__input' name="waterLevel" required />
-                                    <label className='form__label' style={{ marginBottom: '2rem' }} htmlFor="name">Water Level (ft)</label>
-                                </div>
-                                <div className="form__control">
-                                    <input onChange={handleData} placeholder='Capacity (Ac.ft)' type="text" className='form__input' name="waterCapacity" />
-                                    <label className='form__label' style={{ marginBottom: '2rem' }} htmlFor="name">Capacity (Ac.ft)</label>
-                                </div>
-                                <h3>Date Measured</h3>
-                                <div className="form__control">
-                                    <Calendar onChange={setDate} value={date} />
-                                </div>
-                                <div style={{ marginTop: '2rem' }}>
-                                    <Button variant='contained' color='primary' aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-                                        {sheet}
-                                    </Button>
-                                    <Menu
-                                        id="simple-menu"
-                                        anchorEl={anchorEl}
-                                        keepMounted
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleCloseMenu}
-                                    >
-                                        <TankList />
-                                    </Menu>
-                                </div>
-                                <div className="btn__box">
-                                    <button aria-current={tankWater[1]} type='submit' aria-label='tankWater' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
-                                </div>
+                            <h3>Date Measured</h3>
+                            <div className="form__control">
+                                <Calendar onChange={setDate} value={date} />
                             </div>
-                        }
-                        {formData['stationName'] == 'addedList' &&
-                            <>
-                                <Rainfall sheetList={sheetName} rainCheck={rainFall[0]} tankCheck={tankWater[0]} email={email} id={cookies.EditorID} />
-                            </>
-                        }
-                    </form>
-                    : null
-
+                            <div style={{ marginTop: '2rem' }}>
+                                <Button variant='contained' color='primary' aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                                    {sheet}
+                                </Button>
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleCloseMenu}
+                                >
+                                    <RainList />
+                                </Menu>
+                            </div>
+                            <div className="btn__box">
+                                <button aria-current={rainFall[1]} type='submit' aria-label='rainFall' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
+                            </div>
+                        </div>
+                    }
+                    {formData['stationName'] == 'tankWater' &&
+                        <div className="m-top admin__header">
+                            <h3>Create Record</h3>
+                            <div className="form__control">
+                                <input onChange={handleData} placeholder='Water Level (ft)' type="text" className='form__input' name="waterLevel" required />
+                                <label className='form__label' style={{ marginBottom: '2rem' }} htmlFor="name">Water Level (ft)</label>
+                            </div>
+                            <div className="form__control">
+                                <input onChange={handleData} placeholder='Capacity (Ac.ft)' type="text" className='form__input' name="waterCapacity" />
+                                <label className='form__label' style={{ marginBottom: '2rem' }} htmlFor="name">Capacity (Ac.ft)</label>
+                            </div>
+                            <h3>Date Measured</h3>
+                            <div className="form__control">
+                                <Calendar onChange={setDate} value={date} />
+                            </div>
+                            <div style={{ marginTop: '2rem' }}>
+                                <Button variant='contained' color='primary' aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                                    {sheet}
+                                </Button>
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={anchorEl}
+                                    keepMounted
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleCloseMenu}
+                                >
+                                    <TankList />
+                                </Menu>
+                            </div>
+                            <div className="btn__box">
+                                <button aria-current={tankWater[1]} type='submit' aria-label='tankWater' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
+                            </div>
+                        </div>
+                    }
+                    {formData['stationName'] == 'addedList' &&
+                        <>
+                            <Rainfall sheetList={sheetName} rainCheck={rainFall[0]} tankCheck={tankWater[0]} email={email} id={cookies.EditorID} />
+                        </>
+                    }
+                </form>
             }
+
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle>Confirmation</DialogTitle>
                 <DialogContent>
