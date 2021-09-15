@@ -130,7 +130,6 @@ const ASC = () => {
     };
 
     const handleClose = (e) => {
-        setAnchorEl(null);
         const value = e.target.childNodes[0].data
         const valueTitle = value.trim().split('-')[1].trim()
         setFormData({
@@ -141,6 +140,7 @@ const ASC = () => {
             select.push(value)
         }
         document.querySelector('.btn__box').classList.remove('none')
+        setAnchorEl(null);
     };
 
     const closeTypo = (e) => {

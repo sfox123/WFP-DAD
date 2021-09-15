@@ -29,6 +29,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { List } from '@material-ui/core';
+import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
 
 
 const sheet = 'https://docs.google.com/spreadsheets/d/'
@@ -72,6 +73,7 @@ const Sheet = (props) => {
     const [cookies, setCookie, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
     const [Name, setName] = useState('')
     const [Pass, setPass] = useState('')
+    const [Id, setId] = useState('')
 
     useEffect(async () => {
         const { data } = await Axios.get('/getEditor/All')
@@ -85,6 +87,7 @@ const Sheet = (props) => {
     const handleOpenUser = (e) => {
         setName(e.currentTarget.ariaLabel)
         setPass(e.currentTarget.ariaCurrent)
+        setId(e.currentTarget.ariaLevel)
         setOpenUser(true)
     }
     const handleClose = () => {
@@ -107,6 +110,7 @@ const Sheet = (props) => {
 
     const handleClickOpen = async (e) => {
         const label = e.currentTarget.ariaLabel
+<<<<<<< HEAD
         setUser(label)
         let tmpArr = []
         const Tmp = []
@@ -132,7 +136,30 @@ const Sheet = (props) => {
             }
         })
 
+=======
+
+        const tmpArr = []
+
+        sheetList.map((e, elem) => {
+            editorList.map((x, index) => {
+                const { email, sheetName } = x;
+                if (email == label) {
+                    sheetName.map((el, i) => {
+                        const val = el.split('-')[0].trim();
+                        if (e[1] == val) {
+                            tmpArr.push({ [e[1]]: true })
+                        } 
+                        else {
+                            tmpArr.push({ [e[1]]: false })
+                        }
+                    })
+                }
+            })
+        })
+        
+>>>>>>> origin/rilah
         setList(tmpArr);
+        console.log(tmpArr)
         setOpen(true);
     };
 
@@ -175,6 +202,7 @@ const Sheet = (props) => {
     return (
         <div className={classes.root}>
             {editorList.map((x, i) => (
+<<<<<<< HEAD
                 x.asc == cookies.AscID &&
                 <Card key={i} className={classes.Cardroot}>
                     <CardContent>
@@ -184,6 +212,30 @@ const Sheet = (props) => {
                         {x.rainFall[0] &&
                             <CardActions>
                                 <Button target='_blank' href={`${sheet + x.rainFall[1]}`} color="primary" variant="contained" size="small">RainFall Sheet</Button>
+=======
+                x.asc == cookies.AscID ?
+                    <Card key={i} className={classes.Cardroot}>
+                        <CardContent>
+                            <Typography className={classes.title} color="textPrimary" gutterBottom>
+                                {x.email}
+                            </Typography>
+                            {x.rainFall[0] &&
+                                <CardActions>
+                                    <Button target='_blank' href={`${sheet + x.rainFall[1]}`} color="primary" variant="contained" size="small">RainFall Sheet</Button>
+                                </CardActions>
+                            }
+                            {x.tankWater[0] &&
+                                <CardActions>
+                                    <Button target='_blank' href={`${sheet + x.tankWater[1]}`} color="primary" variant="contained" size="small">TankWater Sheet</Button>
+                                </CardActions>
+                            }
+
+                            <CardActions className={classes.margin}>
+                                <Button aria-label={x.email} onClick={handleOpenUser} aria-current={x.decoded} aria-level={x._id} variant="contained" size="small">User Details</Button>
+                            </CardActions>
+                            <CardActions className={classes.margin}>
+                                <Button aria-label={x._id} variant="contained" onClick={handleOpen} color='secondary' size="small">Delete User</Button>
+>>>>>>> origin/rilah
                             </CardActions>
                         }
                         {x.tankWater[0] &&
@@ -232,7 +284,7 @@ const Sheet = (props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <User open={openUser} setOpen={setOpenUser} name={Name} passWord={Pass} />
+            <User open={openUser} setOpen={setOpenUser} name={Name} passWord={Pass} Id={Id}/>
             <Dialog
                 open={open}
                 onClose={handleClickClose}
