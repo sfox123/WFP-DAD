@@ -29,6 +29,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { List } from '@material-ui/core';
+import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
 
 
 const sheet = 'https://docs.google.com/spreadsheets/d/'
@@ -71,10 +72,11 @@ const Sheet = (props) => {
     const [cookies, setCookie, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
     const [Name, setName] = useState('')
     const [Pass, setPass] = useState('')
+    const [Id, setId] = useState('')
 
     useEffect(async () => {
         const { data } = await Axios.get('/getEditor/All')
-        setCheck(data)
+
     }, [])
 
     const handleOpen = (e) => {
@@ -84,6 +86,7 @@ const Sheet = (props) => {
     const handleOpenUser = (e) => {
         setName(e.currentTarget.ariaLabel)
         setPass(e.currentTarget.ariaCurrent)
+        setId(e.currentTarget.ariaLevel)
         setOpenUser(true)
     }
     const handleClose = () => {
@@ -106,25 +109,28 @@ const Sheet = (props) => {
 
     const handleClickOpen = async (e) => {
         const label = e.currentTarget.ariaLabel
+
         const tmpArr = []
 
         sheetList.map((e, elem) => {
-            console.log(elem)
-            check.map((x, index) => {
+            editorList.map((x, index) => {
                 const { email, sheetName } = x;
                 if (email == label) {
                     sheetName.map((el, i) => {
                         const val = el.split('-')[0].trim();
                         if (e[1] == val) {
                             tmpArr.push({ [e[1]]: true })
-                        } else if (e[1] != val) {
+                        } 
+                        else {
                             tmpArr.push({ [e[1]]: false })
                         }
-                    });
+                    })
                 }
             })
         })
+        
         setList(tmpArr);
+        console.log(tmpArr)
         setOpen(true);
     };
 
@@ -153,7 +159,7 @@ const Sheet = (props) => {
                             }
 
                             <CardActions className={classes.margin}>
-                                <Button aria-label={x.email} onClick={handleOpenUser} aria-current={x.decoded} variant="contained" size="small">User Details</Button>
+                                <Button aria-label={x.email} onClick={handleOpenUser} aria-current={x.decoded} aria-level={x._id} variant="contained" size="small">User Details</Button>
                             </CardActions>
                             <CardActions className={classes.margin}>
                                 <Button aria-label={x._id} variant="contained" onClick={handleOpen} color='secondary' size="small">Delete User</Button>
@@ -193,7 +199,7 @@ const Sheet = (props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <User open={openUser} setOpen={setOpenUser} name={Name} passWord={Pass} />
+            <User open={openUser} setOpen={setOpenUser} name={Name} passWord={Pass} Id={Id}/>
             <Dialog
                 open={open}
                 onClose={handleClickClose}

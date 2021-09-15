@@ -11,6 +11,8 @@ import Weather from './pages/Weather'
 import Forecast from './pages/Forecast'
 import Login from './pages/Login'
 
+import '../styles/Nav.css'
+
 import logo from '../img/logo.png'
 
 const handleResponse = (evt) => {
@@ -29,8 +31,10 @@ const Nav = () => {
 
     const navItems = ["Agromet Advisory", "Tank-Water Level", "Rainfall Analysis", "Drought Analysis", "weather around your location", "Weather forecast"];
     const [active, setActive] = useState(0);
+    const [open, setOpen] = useState(false)
 
     const handleClick = (btn) => {
+        setOpen(false)
         handleResponse()
         const className = btn.currentTarget.id
         setActive(className)
@@ -48,11 +52,16 @@ const Nav = () => {
         }
     }
 
+    const handleOpen = () => {
+        handleResponse()
+        setOpen(!open)
+    }
+
     return (
         <>
             <div className="container">
                 <div className='Nav'>
-                    <div className="Nav__logobox">
+                    <div className="Nav__logobox" >
                         <a href="#" className="Nav__home">
                             <img src={logo} alt="logo" className='Nav__logo' />
                         </a>
@@ -61,10 +70,13 @@ const Nav = () => {
 
                     </div>
                 </div>
-                <div className="bar">
+                <div className="bar media_">
                     <div className="bar__items">
                         <ul className="ul bar__ul">
-                            <li key='10' onClick={handleResponse} className='bar__bar'><a href="#" className='bar__link'><FontAwesomeIcon icon={faBars} /></a></li>
+                        {open === false && (
+                            <li key='10' onClick={handleOpen} className='bar__bar'><a href="#" className='bar__link'><FontAwesomeIcon icon={faBars}/> </a></li>
+                            )
+                        }
                             {navItems.map((x, i) => (
                                 <li onClick={handleClick} id={i} key={i} className={`bar__list ${i == 0 ? 'bar__list__selected' : null}`}><a href="#" className='bar__link'>{x}</a></li>
                             ))}

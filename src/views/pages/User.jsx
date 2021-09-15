@@ -1,56 +1,77 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import { InputAdornment } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
+import Input from '@material-ui/core/Input';
+import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import Axios from '../../api/api'
 
 export default function FormDialog(props) {
-    const { open, setOpen, name, passWord } = props
+    const { open, setOpen, name, passWord, Id } = props
+    const [showPassword, setShowPassword] = useState(false)
+    const [password, setPassword] = useState('')
 
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-
+    const updateHandler = async (e) => {
+        e.preventDefault()
+       await Axios.post(`/users/${Id}`)
+    }
 
     return (
         <div>
-            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <form onSubmit={updateHandler}>
+            <Dialog open={open} onClose={() => setOpen(false) } 
+                aria-labelledby="form-dialog-title"
+                disablePortal
+                >
                 <DialogTitle id="form-dialog-title">User Details</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        You can copy the username and password fields but can't edit
-                    </DialogContentText>
+                <DialogContent
+                    style={{height: '125px', width: '300px'}}
+                >
+                    <InputLabel htmlFor="name">Email</InputLabel>
                     <TextField
                         autoFocus
                         margin="dense"
                         id="name"
-                        label="Email Address"
-                        type="email"
+                        type="text"
                         value={name}
                         fullWidth
                     />
-                    <TextField
-                        autoFocus
-                        margin="dense"
+                    <InputLabel htmlFor="password">Password</InputLabel>
+                    <Input
                         id="password"
-                        label="Password"
-                        type="email"
-                        value={passWord}
+                        type={showPassword ? 'text' : 'password'}
+                        defaultValue={passWord}
                         fullWidth
+                        onChange={(e) => setPassword(e.target.value)}
+                        endAdornment = {
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    onMouseDown={(e) => e.preventDefault}
+                                >
+                                    {showPassword ? <Visibility /> : <VisibilityOff /> }
+                                </IconButton>
+                            </InputAdornment>
+                        }
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={handleClose} color='secondary'>
+                    <Button variant="contained" type="submit" color='secondary'>
+                        Update
+                    </Button>
+                    <Button variant="contained" onClick={() => setOpen(false)} color='secondary'>
                         Close
                     </Button>
                 </DialogActions>
             </Dialog>
+            </form>
         </div>
     );
 }
