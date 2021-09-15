@@ -29,7 +29,6 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { List } from '@material-ui/core';
-import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
 
 
 const sheet = 'https://docs.google.com/spreadsheets/d/'
@@ -64,15 +63,15 @@ const Sheet = (props) => {
     const { editorList, open, setOpen, sheetList } = props
     const classes = useStyles();
     const [value, setValue] = React.useState('');
+    const [loadUpdate, setLoadUpdate] = useState(false)
     const [load, setLoad] = useState(false)
     const [openUser, setOpenUser] = useState(false)
     const [openDel, setOpenDel] = useState(false);
-    const [check, setCheck] = useState([])
+    const [user, setUser] = useState()
     const [list, setList] = useState([])
     const [cookies, setCookie, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
     const [Name, setName] = useState('')
     const [Pass, setPass] = useState('')
-    const [Id, setId] = useState('')
 
     useEffect(async () => {
         const { data } = await Axios.get('/getEditor/All')
@@ -104,77 +103,115 @@ const Sheet = (props) => {
         })
     }
 
+
+
     const handleClickOpen = async (e) => {
         const label = e.currentTarget.ariaLabel
-        const tmp = []
-        await sheetList.map((x) => {
-            tmp.push({ [x[1]]: false })
+        setUser(label)
+        let tmpArr = []
+        const Tmp = []
+
+        sheetList.map((e, elem) => {
+            tmpArr.push({ [e[1]]: false })
         })
-        setList(tmp)
 
-
-        await editorList.map(x => {
+        editorList.map((x, index) => {
             const { email, sheetName } = x;
             if (email == label) {
-                sheetName.forEach(el => {
+                sheetName.map((el, index) => {
                     const val = el.split('-')[0].trim();
-                    list.map((y) => {
-                        if (Object.keys(y)[0] == val) {
-                            y[val] = true
-                            console.log(Object.values(y))
-                        }
-                    })
-                });
+                    Tmp.push(val)
+                })
             }
         })
 
+        tmpArr.map((x, i) => {
+            if (Tmp.includes(Object.keys(x)[0])) {
+
+                tmpArr[i] = { [Object.keys(x)[0]]: true }
+            }
+        })
+
+        setList(tmpArr);
         setOpen(true);
     };
 
     const handleClickClose = (e) => {
         setOpen(false);
     };
+
+    const handleCheck = (e) => {
+        const label = e.currentTarget.name
+        const tmp = [...list]
+        tmp.map((e, i) => {
+            if (label == Object.keys(e)[0]) {
+                tmp[i] = { [Object.keys(e)[0]]: !e[Object.keys(e)[0]] }
+            }
+        })
+        setList(tmp)
+    }
+
+    const handleUpdate = async () => {
+        setLoadUpdate(true);
+        const tmp = [];
+        const TMP = [];
+        list.map((x, i) => {
+            if (x[Object.keys(x)[0]]) {
+                tmp.push(Object.keys(x)[0])
+            }
+        })
+        sheetList.map((x, i) => {
+            if (tmp.includes(x[1])) {
+                TMP.push(`${x[1]} - ${x[0]}`)
+            }
+        })
+        if (TMP.length == 0) {
+            alert('Please Select Atleast One')
+            setLoadUpdate(false)
+        } else {
+            await Axios.post('/updateStation', { 'data': TMP, 'user': user }).then(res => { setLoadUpdate(false) }).catch(err => console.error(err)).finally(() => { window.location.reload() })
+        }
+    }
     return (
         <div className={classes.root}>
             {editorList.map((x, i) => (
-                x.asc == cookies.AscID ?
-                    <Card key={i} className={classes.Cardroot}>
-                        <CardContent>
-                            <Typography className={classes.title} color="textPrimary" gutterBottom>
-                                {x.email}
-                            </Typography>
-                            {x.rainFall[0] &&
-                                <CardActions>
-                                    <Button target='_blank' href={`${sheet + x.rainFall[1]}`} color="primary" variant="contained" size="small">RainFall Sheet</Button>
-                                </CardActions>
-                            }
-                            {x.tankWater[0] &&
-                                <CardActions>
-                                    <Button target='_blank' href={`${sheet + x.tankWater[1]}`} color="primary" variant="contained" size="small">TankWater Sheet</Button>
-                                </CardActions>
-                            }
-
-                            <CardActions className={classes.margin}>
-                                <Button aria-label={x.email} onClick={handleOpenUser} aria-current={x.decoded} aria-level={x._id} variant="contained" size="small">User Details</Button>
-                            </CardActions>
-                            <CardActions className={classes.margin}>
-                                <Button aria-label={x._id} variant="contained" onClick={handleOpen} color='secondary' size="small">Delete User</Button>
-                            </CardActions>
+                x.asc == cookies.AscID &&
+                <Card key={i} className={classes.Cardroot}>
+                    <CardContent>
+                        <Typography className={classes.title} color="textPrimary" gutterBottom>
+                            {x.email}
+                        </Typography>
+                        {x.rainFall[0] &&
                             <CardActions>
-                                <List>
-                                    <ListItem aria-label={x.email} autoFocus button onClick={handleClickOpen}>
-                                        <ListItemAvatar>
-                                            <Avatar>
-                                                <AddIcon />
-                                            </Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText primary="Add or Remove Stations" />
-                                    </ListItem>
-                                </List>
+                                <Button target='_blank' href={`${sheet + x.rainFall[1]}`} color="primary" variant="contained" size="small">RainFall Sheet</Button>
                             </CardActions>
-                        </CardContent>
-                    </Card>
-                    : null
+                        }
+                        {x.tankWater[0] &&
+                            <CardActions>
+                                <Button target='_blank' href={`${sheet + x.tankWater[1]}`} color="primary" variant="contained" size="small">TankWater Sheet</Button>
+                            </CardActions>
+                        }
+
+                        <CardActions className={classes.margin}>
+                            <Button aria-label={x.email} onClick={handleOpenUser} aria-current={x.decoded} variant="contained" size="small">User Details</Button>
+                        </CardActions>
+                        <CardActions className={classes.margin}>
+                            <Button aria-label={x._id} variant="contained" onClick={handleOpen} color='secondary' size="small">Delete User</Button>
+                        </CardActions>
+                        <CardActions>
+                            <List>
+                                <ListItem aria-label={x.email} autoFocus button onClick={handleClickOpen}>
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <AddIcon />
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary="Add or Remove Stations" />
+                                </ListItem>
+                            </List>
+                        </CardActions>
+                    </CardContent>
+                </Card>
             ))}
             <Dialog open={openDel} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle>Warning !!!</DialogTitle>
@@ -195,7 +232,7 @@ const Sheet = (props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <User open={openUser} setOpen={setOpenUser} name={Name} passWord={Pass} Id={Id} />
+            <User open={openUser} setOpen={setOpenUser} name={Name} passWord={Pass} />
             <Dialog
                 open={open}
                 onClose={handleClickClose}
@@ -207,9 +244,9 @@ const Sheet = (props) => {
                     <DialogContentText id="alert-dialog-description">
                         <FormGroup row>
                             {list.map((x, i) => (
-                                <div key={i} aria-label={x[Object.keys(x)[0]]}>
+                                <div key={i} >
                                     <FormControlLabel
-                                        control={<Checkbox checked={x[Object.keys(x)[0]]} name="station" />}
+                                        control={<Checkbox checked={x[Object.keys(x)[0]]} onChange={handleCheck} name={Object.keys(x)[0]} />}
                                         label={Object.keys(x)[0]}
                                     />
                                     <br />
@@ -222,9 +259,11 @@ const Sheet = (props) => {
                     <Button onClick={handleClickClose} color="secondary">
                         Cancel
                     </Button>
-                    <Button onClick={handleClickClose} color="primary" variant='outlined' autoFocus>
-                        Update
-                    </Button>
+                    {loadUpdate ? <div style={{ padding: '2rem' }}><CircularProgress /></div> :
+                        <Button onClick={handleUpdate} color="primary" variant='outlined' autoFocus>
+                            Update
+                        </Button>
+                    }
                 </DialogActions>
             </Dialog>
         </div>
