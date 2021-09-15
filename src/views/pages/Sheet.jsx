@@ -86,7 +86,6 @@ const Sheet = (props) => {
     const handleOpenUser = (e) => {
         setName(e.currentTarget.ariaLabel)
         setPass(e.currentTarget.ariaCurrent)
-        setId(e.currentTarget.ariaLevel)
         setOpenUser(true)
     }
     const handleClose = () => {
@@ -105,39 +104,36 @@ const Sheet = (props) => {
         })
     }
 
-
-
     const handleClickOpen = async (e) => {
         const label = e.currentTarget.ariaLabel
+        const tmp = []
+        await sheetList.map((x) => {
+            tmp.push({ [x[1]]: false })
+        })
+        setList(tmp)
 
-        const tmpArr = []
 
-        sheetList.map((e, elem) => {
-            editorList.map((x, index) => {
-                const { email, sheetName } = x;
-                if (email == label) {
-                    sheetName.map((el, i) => {
-                        const val = el.split('-')[0].trim();
-                        if (e[1] == val) {
-                            tmpArr.push({ [e[1]]: true })
-                        }
-                        else {
-                            tmpArr.push({ [e[1]]: false })
+        await editorList.map(x => {
+            const { email, sheetName } = x;
+            if (email == label) {
+                sheetName.forEach(el => {
+                    const val = el.split('-')[0].trim();
+                    list.map((y) => {
+                        if (Object.keys(y)[0] == val) {
+                            y[val] = true
+                            console.log(Object.values(y))
                         }
                     })
-                }
-            })
+                });
+            }
         })
 
-        setList(tmpArr);
-        console.log(tmpArr)
         setOpen(true);
     };
 
     const handleClickClose = (e) => {
         setOpen(false);
     };
-
     return (
         <div className={classes.root}>
             {editorList.map((x, i) => (
