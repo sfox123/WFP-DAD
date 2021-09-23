@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { ApiContext } from '../context/ApiContext'
 import { useCookies } from 'react-cookie';
 
 export const EditSecured = ({ component: Component, ...rest }) => {
-    const [cookies, setCookie] = useCookies(['isLoggedinEditor']);
+    const [cookies] = useCookies(['isLoggedinEditor']);
 
     return (
         <Route

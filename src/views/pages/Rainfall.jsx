@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../../img/2.png'
-import Map from './Map'
+
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button'
@@ -27,18 +27,18 @@ const useStyles = makeStyles((theme) => ({
 
 const Rainfall = () => {
     const classes = useStyles()
-    const [apiData, setApiData] = useState([])
+    // const [apiData, setApiData] = useState([])
     const [value, setValue] = React.useState(1);
     const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1xpm1j5pulQFL4GPeU8LLsp74UeHymHytJEO1olDCzn0/export?format=xlsx')
 
-    useEffect(async () => {
-        await Axios.get('/getWeather/2').then(res => setApiData(res.data)).catch(err => console.error(err))
-    }, [])
+    // useEffect(async () => {
+    //     await Axios.get('/getWeather/2').then(res => setApiData(res.data)).catch(err => console.error(err))
+    // }, [])
 
     const handleChange = (event) => {
         const val = event.target.value
         setValue(val);
-        val == 1 ? setUrl('https://docs.google.com/spreadsheets/d/1xpm1j5pulQFL4GPeU8LLsp74UeHymHytJEO1olDCzn0/export?format=xlsx') :
+        val === 1 ? setUrl('https://docs.google.com/spreadsheets/d/1xpm1j5pulQFL4GPeU8LLsp74UeHymHytJEO1olDCzn0/export?format=xlsx') :
             setUrl('https://docs.google.com/spreadsheets/d/1sPRn1djyNIpw20pJIzSCtyYna1mVJIeFf43Rep2UXgM/export?format=xlsx')
     };
 

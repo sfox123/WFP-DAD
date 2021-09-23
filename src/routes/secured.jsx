@@ -1,12 +1,11 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
 import { ApiContext } from '../context/ApiContext'
 import { useCookies } from 'react-cookie';
-import axios from "axios";
 
 export const Secured = ({ component: Component, ...rest }) => {
-    const [cookies, setCookie] = useCookies(['isLoggedinASC', 'AscID']);
-    const { user, setUser } = useContext(ApiContext)
+    const [cookies] = useCookies(['isLoggedinASC', 'AscID']);
+    const { user } = useContext(ApiContext)
     const { level } = user;
 
 
@@ -14,7 +13,7 @@ export const Secured = ({ component: Component, ...rest }) => {
         <Route
             {...rest}
             render={(props) => {
-                if (level == 2 || cookies.isLoggedinASC) {
+                if (level === 2 || cookies.isLoggedinASC) {
                     return <Component {...props} />;
                 } else {
                     return (

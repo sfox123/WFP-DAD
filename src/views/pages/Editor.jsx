@@ -5,7 +5,6 @@ import { ApiContext } from '../../context/ApiContext'
 
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css';
-import Loader from './Loader'
 import Axios from '../../api/api'
 import addUser from '../../img/AddUser.svg'
 
@@ -28,7 +27,7 @@ function Alert(props) {
 }
 
 const Editor = () => {
-    const { user, setUser, User } = useContext(ApiContext)
+    const { setUser } = useContext(ApiContext)
     const [loader, setLoader] = useState(false)
     const [load, setLoad] = useState(true)
     const [formData, setFormData] = useState('')
@@ -71,10 +70,10 @@ const Editor = () => {
         e.preventDefault()
         const label = document.querySelector('#submit').ariaLabel
         const id = document.querySelector('#submit').ariaCurrent
-        if (label == 'rainFall') {
+        if (label === 'rainFall') {
             setOpen(true)
             setId(id)
-        } else if (label == 'tankWater') {
+        } else if (label === 'tankWater') {
             setOpenTank(true)
             setId(id)
         }
@@ -85,13 +84,17 @@ const Editor = () => {
             [e.target.name]: e.target.value.trim()
         })
     }
-    useEffect(async () => {
+    useEffect(() => {
+        async function getEditor() {
+            await Axios.get(`/editorFetch/${cookies.EditorID}`).then(({ data }) => {
+                setEditor(data)
+            }).catch(err => console.error(err));
+        }
         setFormData({
             ...formData,
             ['stationName']: 'rainFall'
         })
-        const { data } = await Axios.get(`/editorFetch/${cookies.EditorID}`)
-        setEditor(data);
+        getEditor();
         setLoad(false)
     }, [])
     const handleClose = () => {
@@ -109,7 +112,7 @@ const Editor = () => {
         (props, ref) => {
             return <div>
                 {sheetName.map(x => (
-                    x.split('-')[1].trim() == "rainFall" && <MenuItem {...ref} {...props} onClick={handleCloseMenu} key={uuid()} {...props} >{x.split('-')[0].trim()} </MenuItem>
+                    x.split('-')[1].trim() === "rainFall" && <MenuItem {...ref} {...props} onClick={handleCloseMenu} key={uuid()} {...props} >{x.split('-')[0].trim()} </MenuItem>
                 ))}
             </div>
         }
@@ -120,7 +123,7 @@ const Editor = () => {
         (props, ref) => {
             return <div>
                 {sheetName.map(x => (
-                    x.split('-')[1].trim() == "tankWater" &&
+                    x.split('-')[1].trim() === "tankWater" &&
                     <MenuItem onClick={handleCloseMenu} key={uuid()} {...ref} {...props} >{x.split('-')[0].trim()} </MenuItem>
 
                 ))}
@@ -181,7 +184,7 @@ const Editor = () => {
                             </label>
                         </div>
                     </div>
-                    {formData['stationName'] == 'rainFall' &&
+                    {formData['stationName'] === 'rainFall' &&
                         <div className="m-top admin__header">
                             <h3>Create Record</h3>
                             <div className="form__control">
@@ -211,7 +214,7 @@ const Editor = () => {
                             </div>
                         </div>
                     }
-                    {formData['stationName'] == 'tankWater' &&
+                    {formData['stationName'] === 'tankWater' &&
                         <div className="m-top admin__header">
                             <h3>Create Record</h3>
                             <div className="form__control">
@@ -245,7 +248,7 @@ const Editor = () => {
                             </div>
                         </div>
                     }
-                    {formData['stationName'] == 'addedList' &&
+                    {formData['stationName'] === 'addedList' &&
                         <>
                             <Rainfall sheetList={sheetName} rainCheck={rainFall[0]} tankCheck={tankWater[0]} email={email} id={cookies.EditorID} />
                         </>

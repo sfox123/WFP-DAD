@@ -1,5 +1,5 @@
-import React, { useReducer, useEffect, useState, useContext } from "react";
-import { Route, Switch, Router } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Route, Switch } from "react-router-dom";
 import "./styles/Main.sass";
 import Nav from "./views/Nav";
 import Admin from "./views/pages/Admin";
@@ -17,19 +17,22 @@ function App() {
   const [user, setUser] = useState([[1, 2]]);
   const [apiData, setApiData] = useState("");
   const [admin, setAdmin] = useState("");
-  const [cookies, setCookie, removeCookie] = useCookies([
-    "isLoggedinASC",
-    "AscID",
-  ]);
-  useEffect(async () => {
-    await Axios.get("/apiCall")
-      .then((res) => setApiData(res.data))
-      .catch((err) => console.error(err));
-    if (cookies.isLoggedinASC) {
+  const [cookies] = useCookies(["isLoggedinASC", "AscID"]);
+  useEffect(() => {
+    async function fetchData() {
+      await Axios.get("/apiCall")
+        .then((res) => setApiData(res.data))
+        .catch((err) => console.error(err));
+    }
+    async function getASC() {
       const id = cookies.AscID;
       await Axios.get(`/getEditor/${id}`)
         .then((res) => setAdmin(res.data))
         .catch((err) => console.error(err));
+    }
+    fetchData();
+    if (cookies.isLoggedinASC) {
+      getASC();
     }
   }, []);
 

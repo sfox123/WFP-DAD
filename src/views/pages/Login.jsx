@@ -1,5 +1,5 @@
-import axios from 'axios';
-import React, { useEffect, useState, useContext } from 'react'
+
+import React, { useContext } from 'react'
 import { ApiContext } from '../../context/ApiContext'
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router'
@@ -19,40 +19,54 @@ const Login = (props) => {
         });
     };
 
+    async function handleAdmin() {
+        const loginErr = document.querySelector('.login__error').classList
+        await Axios.post('/signin', { ...formData })
+            .then(res => {
+                setUser(res.data.user)
+                setCookie('isLoggedinAdmin', true)
+                provideHistory.push('/admin')
+            })
+            .catch(err => loginErr.remove('none'))
+    }
+
+    async function handleAsc() {
+        const loginErr = document.querySelector('.login__error').classList
+        await Axios.post('/signin', { ...formData })
+            .then(res => {
+                setUser(res.data.editor)
+                setCookie('isLoggedinASC', true)
+                setCookie('AscID', res.data.asc._id)
+                // provideHistory.push('/asc')
+                window.open('asc')
+            })
+            .catch(err => loginErr.remove('none'))
+    }
+
+    async function handleEditor() {
+        const loginErr = document.querySelector('.login__error').classList
+        await Axios.post('/signin', { ...formData })
+            .then(res => {
+                setUser(res.data.asc)
+                setCookie('isLoggedinEditor', true)
+                setCookie('EditorID', res.data.editor._id)
+                provideHistory.push('/editor');
+            })
+            .catch(err => loginErr.remove('none'))
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const loginErr = document.querySelector('.login__error').classList
-        const loginLoader = document.querySelector('.login__loader').classList.add('enable')
+
         const { email } = formData;
         const splitMail = email.split('-')
         const index = splitMail.indexOf("agro")
-        if (index == 0) {
-            await Axios.post('/signin', { ...formData })
-                .then(res => {
-                    setUser(res.data.user)
-                    provideHistory.push('/admin')
-                    setCookie('isLoggedinAdmin', true)
-                })
-                .catch(err => loginErr.remove('none'))
-        } else if (index == 1) {
-            await Axios.post('/signin', { ...formData })
-                .then(res => {
-                    setUser(res.data.editor)
-                    window.open("asc")
-                    setCookie('isLoggedinASC', true)
-                    setCookie('AscID', res.data.asc._id)
-                })
-                .catch(err => loginErr.remove('none'))
-
+        if (index === 0) {
+            handleAdmin();
+        } else if (index === 1) {
+            handleAsc();
         } else {
-            await Axios.post('/signin', { ...formData })
-                .then(res => {
-                    setUser(res.data.asc)
-                    window.open("editor")
-                    setCookie('isLoggedinEditor', true)
-                    setCookie('EditorID', res.data.editor._id)
-                })
-                .catch(err => loginErr.remove('none'))
+            handleEditor();
         }
 
     };

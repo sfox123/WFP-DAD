@@ -4,14 +4,14 @@ import { ApiContext } from '../context/ApiContext'
 import { useCookies } from 'react-cookie';
 
 export const Protected = ({ component: Component, ...rest }) => {
-  const [cookies, setCookie] = useCookies(['isLoggedin']);
+  const [cookies] = useCookies(['isLoggedin']);
   const { user } = useContext(ApiContext)
   const { level } = user;
   return (
     <Route
       {...rest}
       render={(props) => {
-        if (level == 1 || cookies.isLoggedinAdmin) {
+        if (level === 1 || cookies.isLoggedinAdmin) {
           return <Component {...props} />;
         } else {
           return (

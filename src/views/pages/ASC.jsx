@@ -83,7 +83,6 @@ const ASC = () => {
     const handleFile = async (e) => {
         let file = e.target.files
         const { size } = file[0]
-        console.log(size)
         let reader = new FileReader();
         reader.readAsDataURL(file[0]);
         reader.onload = (e) => {

@@ -1,5 +1,5 @@
-import React, { useState, memo, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+
 
 import User from './User'
 import { useCookies } from 'react-cookie'
@@ -7,7 +7,7 @@ import { useCookies } from 'react-cookie'
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -25,8 +25,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Axios from '../../api/api';
 import FormGroup from '@material-ui/core/FormGroup';
 import Checkbox from '@material-ui/core/Checkbox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
+
+
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { List } from '@material-ui/core';
 
@@ -55,9 +55,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const createItem = (x) => {
-    return { [x]: false }
-}
 
 const Sheet = (props) => {
     const { editorList, open, setOpen, sheetList } = props
@@ -69,14 +66,9 @@ const Sheet = (props) => {
     const [openDel, setOpenDel] = useState(false);
     const [user, setUser] = useState()
     const [list, setList] = useState([])
-    const [cookies, setCookie, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
+    const [cookies] = useCookies(['isLoggedinASC', 'AscID'])
     const [Name, setName] = useState('')
     const [Pass, setPass] = useState('')
-
-    useEffect(async () => {
-        const { data } = await Axios.get('/getEditor/All')
-
-    }, [])
 
     const handleOpen = (e) => {
         setValue(e.currentTarget.ariaLabel)
@@ -117,7 +109,7 @@ const Sheet = (props) => {
 
         editorList.map((x, index) => {
             const { email, sheetName } = x;
-            if (email == label) {
+            if (email === label) {
                 sheetName.map((el, index) => {
                     const val = el.split('-')[0].trim();
                     Tmp.push(val)

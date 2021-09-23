@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../../img/3.png'
 import axios from 'axios';
+import Axios from '../../api/api';
 const Drought = () => {
     const [checked, setChecked] = useState(0)
     const [apiData, setApiData] = useState('')
@@ -16,9 +17,11 @@ const Drought = () => {
         english.classList.contains('radio__selected') && english.classList.remove('radio__selected')
         setChecked(evt)
     }
-    useEffect(async () => {
-        const apiData = await (await axios.get('https://us-central1-express-439e0.cloudfunctions.net/app/getWeather/3')).data
-        await setApiData(apiData)
+    useEffect(() => {
+        async function getData() {
+            await Axios.get('/getWeather/3').then(({ data }) => setApiData(data)).catch(err => console.error(err));
+        }
+        getData();
     }, [])
     return (
         <section className='section__drought'>
@@ -55,7 +58,7 @@ const Drought = () => {
                         </div>
                     </div>
                     <div className="drought__box">
-                        <a className='drought__btn' target='_blank' href={apiData[0]}>Drought Bulletin 2021</a>
+                        <a className='drought__btn' rel="noreferrer" target='_blank' href={apiData[0]}>Drought Bulletin 2021</a>
                     </div>
                 </div>
             </div>
