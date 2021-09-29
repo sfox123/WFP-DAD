@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import Dialog from '@material-ui/core/Dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
 import logo from '../../img/0.png'
 import Axios from '../../api/api'
+import { Button, Link } from '@material-ui/core'
 
 const Agromet = (props) => {
     const [archOne, setArchOne] = useState(true);
@@ -9,18 +13,18 @@ const Agromet = (props) => {
     const [info, setInfo] = useState([])
     const [load, setLoad] = useState(true)
     const [aList, setAList] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [dLoad, setDLoad] = useState(true);
+    const [link, setLink] = useState({});
+    const [linkHead, setLinkHead] = useState([])
+    const [head, setHead] = useState('');
 
     useEffect(async () => {
         const tmp = [];
         let TMP = [];
-
-        let { data } = await Axios.get('/getWeather/0')
-        setApiData(data);
-        await Axios.get('/getAdvisory').then(res => {
-            setInfo(res.data);
-
-        }).catch(err => console.error(err))
-
+        let tmpLink = {};
+        await Axios.get('/getWeather/0').then(({ data }) => { setApiData(data) }).catch(err => console.error(err));
+        await Axios.get('/getAdvisory').then(({ data }) => { setInfo(data) }).catch(err => console.error(err))
         if (aList.length == 0) {
             info.map((x, i) => { tmp.push(x.author) })
 
@@ -28,14 +32,16 @@ const Agromet = (props) => {
                 return self.indexOf(item) === pos;
             })
 
-
+            info.map((x, i) => {
+                tmpLink[`${x.author + "-" + i}`] = [x.name, x.link];
+            })
             setAList(TMP)
+            setLink(tmpLink);
         }
-
         setLoad(false)
 
+        return () => { console.log("Before Mounting ..") }
     }, [aList])
-
 
     const handleClick = (evt) => {
         setArchOne(!archOne)
@@ -54,6 +60,21 @@ const Agromet = (props) => {
 
     }
 
+    function handleClose() {
+        setOpen(false);
+    }
+
+    function handleList(e) {
+        const label = e.target.ariaLabel;
+        setHead(label);
+        setOpen(true);
+
+    }
+
+    function handleOpen() {
+        setDLoad(false);
+        setOpen(true);
+    }
 
     return (
         <>
@@ -90,9 +111,8 @@ const Agromet = (props) => {
                                     </h4>
                                     <div className="content__body">
                                         {aList.map((x, i) => (
-                                            <a href='#' key={i} className='content__btn'>{x}</a>
+                                            <a href='#' key={i} aria-label={x} onClick={handleList} key={i} className='content__btn'>{x}</a>
                                         ))}
-                                        {/* <a id='local' onClick={handleClick} className='content__btn btn content__btn__archive'>Archived Advisories <span className='content__btn__archive__span'>{'->>'}</span></a> */}
                                     </div>
                                 </> :
                                 <div className='content__arch'>
@@ -111,6 +131,16 @@ const Agromet = (props) => {
                     </div>
                 </div>
             }
+            <Dialog open={open} onClose={handleClose}>
+
+                <DialogTitle>{head}</DialogTitle>
+                <DialogContent>
+                    {Object.keys(link).map((x, i) => (
+                        x.split("-")[0] == head && <Button target='_blank' rel='noreferr' href={link[x][1]} key={i}>{link[x][0]}</Button>
+                    ))}
+
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../../img/4.png'
-import axios from 'axios';
+
+import Axios from '../../api/api';
 
 const Weather = () => {
     const [apiData, setApiData] = useState('')
 
-    useEffect(async () => {
-        const apiData = await (await axios.get('https://us-central1-express-439e0.cloudfunctions.net/app/getWeather/4')).data
-        await setApiData(apiData)
+    async function getWeather() {
+        await Axios.get('/getWeather/4').then(({ data }) => setApiData(data)).catch(err => console.error(err));
+    }
+
+    useEffect(() => {
+        let isMounted = true;
+
+        if (isMounted) {
+            getWeather();
+        }
+
+        return () => {
+            isMounted = false
+        }
     }, [])
 
     return (

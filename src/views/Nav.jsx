@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
@@ -41,10 +41,10 @@ const Nav = () => {
         const arr = document.getElementsByClassName("bar__list");
 
         for (let i = 0; i < arr.length; i++) {
-            if (i == 6) {
+            if (i === 6) {
                 document.querySelector('.bar__list__selected').classList.remove('bar__list__selected');
             }
-            else if (i == className) {
+            else if (i === className) {
                 arr[i].classList.add("bar__list__selected")
             } else {
                 arr[i].classList.remove("bar__list__selected")
@@ -62,7 +62,7 @@ const Nav = () => {
             <div className="container">
                 <div className='Nav'>
                     <div className="Nav__logobox" >
-                        <a href="#" className="Nav__home">
+                        <a href="/" className="Nav__home">
                             <img src={logo} alt="logo" className='Nav__logo' />
                         </a>
                     </div>
@@ -74,10 +74,10 @@ const Nav = () => {
                 <div className="bar media_">
                     <div className="bar__items">
                         <ul className="ul bar__ul">
-                        {open === false && (
-                            <li key='10' onClick={handleOpen} className='bar__bar'><a href="#" className='bar__link'><FontAwesomeIcon icon={faBars}/> </a></li>
+                            {open === false && (
+                                <li key='10' onClick={handleOpen} className='bar__bar'><a href="#" className='bar__link'><FontAwesomeIcon icon={faBars} /> </a></li>
                             )
-                        }
+                            }
                             {navItems.map((x, i) => (
                                 <li onClick={handleClick} id={i} key={i} className={`bar__list ${i == 0 ? 'bar__list__selected' : null}`}><a href="#" className='bar__link'>{x}</a></li>
                             ))}

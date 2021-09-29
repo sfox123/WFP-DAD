@@ -1,5 +1,5 @@
-import axios from 'axios'
-import React, { useState, useContext, useEffect, useReducer } from 'react'
+
+import React, { useState, useContext } from 'react'
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router'
 import { ApiContext } from '../../context/ApiContext'

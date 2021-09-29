@@ -9,7 +9,7 @@ import addUser from '../../img/AddUser.svg'
 import Sheet from './Sheet'
 import Loader from './Loader'
 
-import { Alert, AlertTitle } from '@material-ui/lab';
+import { Alert } from '@material-ui/lab';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
@@ -18,12 +18,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Typography } from '@material-ui/core'
 
 const ASC = () => {
-    const { user, setUser, User } = useContext(ApiContext)
+    const { setUser } = useContext(ApiContext)
     const [loader, setLoader] = useState(false)
     const [load, setLoad] = useState(true)
     const [circle, setCircle] = useState(false)
     const [formLoad, setFormLoad] = useState(false)
-    const [select, setselect] = useState([])
+    const [select] = useState([])
     const [open, setOpen] = useState(false)
     const [formData, setFormData] = useState('')
     const [anchorEl, setAnchorEl] = useState(null);
@@ -32,7 +32,7 @@ const ASC = () => {
     const [fileInput, setFileInput] = useState('')
     const [size, setSize] = useState('')
     const [Listsheet, setList] = useState([])
-    const [cookies, setCookie, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
+    const [cookies, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
     const provideHistory = useHistory()
     const password = uuid().split('-')[0]
 
@@ -54,16 +54,13 @@ const ASC = () => {
         })
     }
 
-    useEffect(async () => {
-
-        await Axios.get('/getEditor/All', { 'asc': cookies.AscID }).then(res => {
-            setEditor(res.data)
-        }).catch(err => window.location.reload())
-        setFormData({
-            ...formData,
-            ['asc']: cookies.AscID, ["rainFall"]: false, ["tankWater"]: false, ["stationName"]: 'rainFall'
-        })
-        if (cookies.isLoggedinASC) {
+    useEffect(() => {
+        async function getEditor() {
+            await Axios.get('/getEditor/All', { 'asc': cookies.AscID }).then(res => {
+                setEditor(res.data)
+            }).catch(err => window.location.reload())
+        }
+        async function getID() {
             const id = cookies.AscID
             await Axios.get(`/getEditor/${id}`).then(res => {
                 setLoad(false)
@@ -71,6 +68,14 @@ const ASC = () => {
             }).catch(err => {
                 console.error(err)
             })
+        }
+        getEditor();
+        setFormData({
+            ...formData,
+            ['asc']: cookies.AscID, ["rainFall"]: false, ["tankWater"]: false, ["stationName"]: 'rainFall'
+        })
+        if (cookies.isLoggedinASC) {
+            getID();
         }
     }, [])
 

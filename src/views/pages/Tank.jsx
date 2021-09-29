@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import axios from 'axios';
+
 import Axios from '../../api/api';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,17 +24,18 @@ const useStyles = makeStyles((theme) => ({
 
 const Tank = () => {
     const classes = useStyles()
-    const [apiData, setApiData] = useState([])
+    // const [apiData, setApiData] = useState([])
     const [value, setValue] = React.useState(1);
     const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1vglLgviFoxQQwa2Wgq1GhCyupgVtmr12WrGkRcSIZ6w/export?format=xlsx')
 
-    useEffect(async () => {
-        await Axios.get('/getWeather/1').then(res => setApiData(res.data)).catch(console.log(err => {
-            alert('Connection Error Reloading Page');
-            window.location.reload()
-        }))
-        // await setApiData(apiData)
-    }, [])
+    // useEffect(() => {
+    //     async function getWeather() {            
+    //         await Axios.get('/getWeather/1').then(res => setApiData(res.data)).catch(console.log(err => {
+    //             alert('Connection Error Reloading Page');
+    //             window.location.reload()
+    //         }))
+    //     }
+    // }, [])
 
     const handleChange = (event) => {
         const val = event.target.value
