@@ -84,17 +84,14 @@ const Editor = () => {
             [e.target.name]: e.target.value.trim()
         })
     }
-    useEffect(() => {
-        async function getEditor() {
-            await Axios.get(`/editorFetch/${cookies.EditorID}`).then(({ data }) => {
-                setEditor(data)
-            }).catch(err => console.error(err));
-        }
+    useEffect(async () => {
+        await Axios.get(`/editorFetch/${cookies.EditorID}`).then(({ data }) => {
+            setEditor(data)
+        }).catch(err => console.error(err));
         setFormData({
             ...formData,
             ['stationName']: 'rainFall'
         })
-        getEditor();
         setLoad(false)
     }, [])
     const handleClose = () => {
