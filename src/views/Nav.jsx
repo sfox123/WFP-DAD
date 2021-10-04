@@ -30,7 +30,7 @@ const handleResponse = (evt) => {
 const Nav = () => {
 
     const navItems = ["Agromet Advisory", "Tank-Water Level", "Rainfall Analysis", "Drought Analysis", "weather around your location", "Weather forecast"];
-    const [active, setActive] = useState(0);
+    const [active, setActive] = useState("0");
     const [open, setOpen] = useState(false)
 
     const handleClick = (btn) => {
@@ -85,13 +85,13 @@ const Nav = () => {
                     </div>
                 </div>
                 <div>
-                    {active == 0 && <Agromet />}
-                    {active == 3 && <Drought />}
-                    {active == 2 && <Rainfall />}
-                    {active == 1 && <Tank />}
-                    {active == 4 && <Weather />}
-                    {active == 5 && <Forecast />}
-                    {active == 6 && <Login />}
+                    {active === "0" && <Agromet />}
+                    {active === "3" && <Drought />}
+                    {active === "2" && <Rainfall />}
+                    {active === "1" && <Tank />}
+                    {active === "4" && <Weather />}
+                    {active === "5" && <Forecast />}
+                    {active === "6" && <Login />}
                 </div>
             </div>
         </>
