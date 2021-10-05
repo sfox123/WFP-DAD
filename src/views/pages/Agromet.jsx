@@ -132,7 +132,7 @@ const Agromet = (props) => {
                 </div>
             }
             <Dialog open={open} onClose={handleClose}>
-                in                <DialogTitle>{head}</DialogTitle>
+                <DialogTitle>{head}</DialogTitle>
                 <DialogContent>
                     {Object.keys(link).map((x, i) => (
                         x.split("-")[0] == head && <Button target='_blank' rel='noreferr' href={link[x][1]} key={i}>{link[x][0]}</Button>

@@ -29,7 +29,7 @@ const handleResponse = (evt) => {
 
 const Nav = () => {
 
-    const navItems = ["Agromet Advisory", "Tank-Water Level", "Rainfall Analysis", "Drought Analysis", "weather around your location", "Weather forecast"];
+    const navItems = ["Agromet Advisory", "Rainfall Measurements", "Tank-Water Levels", "Weather forecast", "Drought Bulletin", "weather around your location"];
     const [active, setActive] = useState("0");
     const [open, setOpen] = useState(false)
 
@@ -86,11 +86,11 @@ const Nav = () => {
                 </div>
                 <div>
                     {active === "0" && <Agromet />}
-                    {active === "3" && <Drought />}
-                    {active === "2" && <Rainfall />}
-                    {active === "1" && <Tank />}
-                    {active === "4" && <Weather />}
-                    {active === "5" && <Forecast />}
+                    {active === "2" && <Tank />}
+                    {active === "1" && <Rainfall />}
+                    {active === "4" && <Drought />}
+                    {active === "5" && <Weather />}
+                    {active === "3" && <Forecast />}
                     {active === "6" && <Login />}
                 </div>
             </div>

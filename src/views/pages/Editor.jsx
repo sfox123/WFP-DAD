@@ -67,7 +67,7 @@ const Editor = () => {
         }).catch(err => console.error(err))
     }
     const handleSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const label = document.querySelector('#submit').ariaLabel
         const id = document.querySelector('#submit').ariaCurrent
         if (label === 'rainFall') {

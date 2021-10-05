@@ -133,18 +133,23 @@ const ASC = () => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (e) => {
-        const value = e.target.childNodes[0].data
-        const valueTitle = value.trim().split('-')[1].trim()
-        setFormData({
-            ...formData,
-            [valueTitle]: true
-        })
-        if (!select.includes(value)) {
-            select.push(value)
+    const handleClose = async (e) => {
+        try {
+            const value = e.target.childNodes[0].data
+            const valueTitle = value.trim().split('-')[1].trim()
+            setFormData({
+                ...formData,
+                [valueTitle]: true
+            })
+            if (!select.includes(value)) {
+                select.push(value)
+            }
+            document.querySelector('.btn__box').classList.remove('none')
+            setAnchorEl(null);
+        } catch (error) {
+            setAnchorEl(null);
         }
-        document.querySelector('.btn__box').classList.remove('none')
-        setAnchorEl(null);
+
     };
 
     const closeTypo = (e) => {
