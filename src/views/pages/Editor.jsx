@@ -99,10 +99,15 @@ const Editor = () => {
         setOpenTank(false)
     }
     const handleCloseMenu = (e) => {
-        setAnchorEl(null);
-        const value = e.target.childNodes[0].data
-        setSheetEl(value)
-        setSheet(value);
+        try {
+            const value = e.target.childNodes[0].data
+            setSheetEl(value)
+            setSheet(value);
+            setAnchorEl(null);
+        } catch (err) {
+            setAnchorEl(null);
+
+        }
     };
 
     const RainList = forwardRef(
