@@ -24,13 +24,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
+const url = 'https://docs.google.com/spreadsheets/d/1z_GnYRfXM-KveUH0sFe73hfIZwdhnoxW4FRM4f2xA7g/edit?usp=sharing';
 const Tank = () => {
     const classes = useStyles()
     const [apiData, setApiData] = useState([])
     const [value, setValue] = React.useState('January');
-    const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1vglLgviFoxQQwa2Wgq1GhCyupgVtmr12WrGkRcSIZ6w/export?format=xlsx')
     const [data, setData] = useState([])
+
     useEffect(async () => {
         let dataArr = [];
         let tmpArr = [];
@@ -91,8 +91,8 @@ const Tank = () => {
                         ))}
                     </Select>
                 </FormControl>
-                <Button href={url} variant='contained' style={{ marginLeft: '2rem', marginTop: '1rem' }} color='primary'>Download Sheet</Button>
-                <BarChart data={data} />
+                <Button href={url} target='_blank' variant='contained' style={{ marginLeft: '2rem', marginTop: '1rem' }} color='primary'>Download Sheet</Button>
+                <BarChart data={data} title='Tank-Water Level' />
             </div>
         </div>
         // </div >

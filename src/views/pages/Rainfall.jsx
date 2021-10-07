@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../../img/2.png'
-
-
+import BarChart from './Chart'
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button'
 import Select from '@material-ui/core/Select';
@@ -25,23 +24,54 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const mS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+
 const Rainfall = () => {
     const classes = useStyles()
-    // const [apiData, setApiData] = useState([])
-    const [value, setValue] = React.useState(1);
+    const [apiData, setApiData] = useState([])
+    const [value, setValue] = React.useState('January');
     const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1xpm1j5pulQFL4GPeU8LLsp74UeHymHytJEO1olDCzn0/export?format=xlsx')
+    const [data, setData] = useState([])
 
-    // useEffect(async () => {
-    //     await Axios.get('/getWeather/2').then(res => setApiData(res.data)).catch(err => console.error(err))
-    // }, [])
+    useEffect(async () => {
+        let dataArr = [];
+        let tmpArr = [];
+
+        if (apiData.length === 0) {
+            await Axios.get('/getRainMaster').then(({ data }) => { dataArr.push(data) }).catch(err => console.error(err)).finally(() => { setApiData(dataArr) });
+        }
+
+        if (data.length === 0) {
+            apiData.map((x, i) => {
+                tmpArr.push(['Station-Name', `Total (mm)`]);
+                x.map((y, z) => {
+                    if (z > 0) {
+                        tmpArr.push([y[0], parseInt(y[3])]);
+                    }
+                })
+            })
+            setData(tmpArr);
+        }
+
+    }, [apiData, data])
 
     const handleChange = (event) => {
+        let tmpArr = [];
         const val = event.target.value
-        setValue(val);
-        val === 1 ? setUrl('https://docs.google.com/spreadsheets/d/1xpm1j5pulQFL4GPeU8LLsp74UeHymHytJEO1olDCzn0/export?format=xlsx') :
-            setUrl('https://docs.google.com/spreadsheets/d/1sPRn1djyNIpw20pJIzSCtyYna1mVJIeFf43Rep2UXgM/export?format=xlsx')
-    };
+        let index = mS.indexOf(val);
 
+        setValue(val);
+        apiData.map((x, i) => {
+            tmpArr.push(['Station-Name', `${val}`]);
+            x.map((y, z) => {
+                if (z > 0) {
+                    tmpArr.push([y[0], parseInt(y[(index) + 3])])
+                }
+            })
+        })
+        setData(tmpArr);
+    };
     return (
         <div className="section">
             <div className="section__title__box">
@@ -50,26 +80,21 @@ const Rainfall = () => {
             </div>
             <div className="content__api">
                 <FormControl className={classes.formControl, classes.marginBottom}>
-                    <InputLabel id="demo-simple-select-label">Station</InputLabel>
+                    <InputLabel id="demo-simple-select-label">Month</InputLabel>
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={value}
+                        label='January'
                         onChange={handleChange}
                     >
-                        <MenuItem value={1}>Moneragala</MenuItem>
-                        <MenuItem value={2}>Mulaitivu</MenuItem>
+                        {mS.map((x, i) => (
+                            <MenuItem key={i} value={x}>{x}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
                 <Button href={url} variant='contained' style={{ marginLeft: '2rem', marginTop: '1rem' }} color='primary'>Download Sheet</Button>
-                {/* {value == 1 ?
-                    <iframe width="1000" height='400' src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQqTIQ8HGrYAmRnx-VamWBltsXrKwwxmNdYaIzb1wxE2iFrJ5tdk1BR_azFshfnPFlWdJEWW2qcvKCB/pubhtml?widget=true&amp;headers=false"></iframe>
-                    :
-                    <iframe width="1000" height='400' src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQi3rQHeICEfrn50yatT-t5RsztxVp1nDhuLcOI6ClTPzDLUTDnh8S8YXnQTHYrikqq_e-JDlzzIwUT/pubhtml?gid=1192892718&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
-                } */}
-                <div className="dist">
-                    <Donut />
-                </div>
+                <BarChart data={data} title='Rainfall - Measurements' />
                 {/* <div className="content__national">
                     <div className="content__picture content__picture__1">
                         &nbsp;

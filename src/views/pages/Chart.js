@@ -2,7 +2,7 @@ import React from "react";
 import { Chart } from "react-google-charts";
 
 export default function BarChart(props) {
-  const { data } = props;
+  const { data, title } = props;
   return (
     <div>
       <Chart
@@ -14,7 +14,7 @@ export default function BarChart(props) {
         options={{
           // Material design options
           chart: {
-            title: "Tank-Water Level",
+            title,
             subtitle: "2021",
           },
         }}
