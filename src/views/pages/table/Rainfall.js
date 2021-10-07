@@ -40,6 +40,7 @@ export default function Rainfall(props) {
   const [tank, setTank] = useState(false);
   const [rows, setRows] = useState([]);
   const [cols, setCols] = useState([]);
+  const [title, setTitle] = useState("Rainfall");
   const [anchorEl, setAnchorEl] = useState(null);
   const [sheet, setSheet] = useState({ rain: [], tank: [] });
   const { rainfall } = apiData;
@@ -54,58 +55,61 @@ export default function Rainfall(props) {
       }
     });
 
-    const { data } = await Axios.post("/getRecords", {
-      id: id,
-      sheetList: sheet,
-    });
-
-    const { rainfall, tankwater } = data;
-
-    setApiData(data);
-    const tmp = [];
-    const arr = [];
-
-    if (rainCheck) {
-      rainfall.map((x, i) => {
-        if (Object.keys(x).length > 5) {
-          Object.keys(x).map((key, index) => {
-            if (index > 4) {
-              if (email == x[index][3]) {
-                tmp.push({
-                  ["rainfall"]: x[index][2],
-                  ["dateMeasured"]: x[index][0],
-                  ["dateRecorded"]: x[index][1],
-                });
-              }
-            }
-          });
-        }
+    if (apiData.length === 0) {
+      const { data } = await Axios.post("/getRecords", {
+        id: id,
+        sheetList: sheet,
       });
 
-      setRows(tmp);
-      if (tankCheck) {
-        tankwater.map((x, i) => {
-          let length = Object.keys(x).length;
+      const { rainfall, tankwater } = data;
+
+      setApiData(data);
+
+      const tmp = [];
+      const arr = [];
+
+      if (rainCheck) {
+        rainfall.map((x, i) => {
           if (Object.keys(x).length > 5) {
             Object.keys(x).map((key, index) => {
               if (index > 4) {
-                if (email == x[index][4]) {
-                  arr.push({
-                    ["wLevel"]: x[index][2],
-                    ["wCapacity"]: x[index][3],
-                    ["dateMeasured"]: x[index][1],
-                    ["dateRecorded"]: x[index][0],
+                if (email == x[index][3]) {
+                  tmp.push({
+                    ["rainfall"]: x[index][2],
+                    ["dateMeasured"]: x[index][0],
+                    ["dateRecorded"]: x[index][1],
                   });
                 }
               }
             });
           }
         });
+
+        setRows(tmp);
+        if (tankCheck) {
+          tankwater.map((x, i) => {
+            let length = Object.keys(x).length;
+            if (Object.keys(x).length > 5) {
+              Object.keys(x).map((key, index) => {
+                if (index > 4) {
+                  if (email == x[index][4]) {
+                    arr.push({
+                      ["wLevel"]: x[index][2],
+                      ["wCapacity"]: x[index][3],
+                      ["dateMeasured"]: x[index][0],
+                      ["dateRecorded"]: x[index][1],
+                    });
+                  }
+                }
+              });
+            }
+          });
+        }
       }
+      setCols(arr);
     }
-    setCols(arr);
     setLoad(false);
-  }, []);
+  }, [apiData]);
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -114,16 +118,35 @@ export default function Rainfall(props) {
   const handleClose = (e) => {
     const value = e.target.ariaLabel;
     if (value == "rain") {
-      setRain(!rain);
-      setTank(!tank);
+      setRain(true);
+      setTank(false);
+      setTitle("Rainfall");
     } else if (value == "tank") {
-      setTank(!tank);
-      setRain(!rain);
+      setTank(true);
+      setRain(false);
+      setTitle("Tank-Water");
     }
 
     setAnchorEl(null);
   };
-
+  function handleDelete() {
+    if (rows.length != 0) {
+      console.log(rows);
+    } else {
+      setTimeout(() => {
+        console.log(rows);
+      }, 2000);
+    }
+  }
+  function handleRemove() {
+    var date = new Date();
+    var myDate = new Date(cols[0].dateMeasured).setHours(1);
+    console.log(myDate);
+    console.log(date);
+    if (date > myDate) {
+      console.log(true);
+    }
+  }
   return (
     <>
       {load ? (
@@ -143,7 +166,7 @@ export default function Rainfall(props) {
               aria-haspopup="true"
               onClick={handleOpen}
             >
-              Rainfall
+              {title}
             </Button>
             <Menu
               id="simple-menu"
@@ -175,6 +198,15 @@ export default function Rainfall(props) {
                     <TableCell>Rainfall (mm)</TableCell>
                     <TableCell align="right">Date Measured</TableCell>
                     <TableCell align="right">Date Recorded</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        onClick={handleDelete}
+                        variant="fill"
+                        style={{ backgroundColor: "red", color: "white" }}
+                      >
+                        Delete Last Record
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -203,6 +235,16 @@ export default function Rainfall(props) {
                     <TableCell>Water Capacity (Ac.ft)</TableCell>
                     <TableCell align="right">Date Measured</TableCell>
                     <TableCell align="right">Date Recorded</TableCell>
+                    <TableCell align="right">
+                      {" "}
+                      <Button
+                        onClick={handleRemove}
+                        variant="fill"
+                        style={{ backgroundColor: "red", color: "white" }}
+                      >
+                        Delete Last Record
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
