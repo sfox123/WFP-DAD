@@ -22,9 +22,9 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '2rem'
     }
 }));
-
+//https://docs.google.com/spreadsheets/d/1z_GnYRfXM-KveUH0sFe73hfIZwdhnoxW4FRM4f2xA7g/export?format=xlsx
 const mS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const url = 'https://docs.google.com/spreadsheets/d/1z_GnYRfXM-KveUH0sFe73hfIZwdhnoxW4FRM4f2xA7g/edit?usp=sharing';
+const url = 'https://docs.google.com/spreadsheets/d/1QzLYOrijo-dZJNh9Qs_jiB1RuruGsljyYYqRXoSQ3ms/export?format=xlsx';
 const Tank = () => {
     const classes = useStyles()
     const [apiData, setApiData] = useState([])

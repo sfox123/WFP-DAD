@@ -42,7 +42,30 @@ const Editor = () => {
     const [sheet, setSheet] = useState('Select Sheet')
     const [cookies, setCookie, removeCookie] = useCookies(['isLoggedinEditor', 'EditorID'])
     const provideHistory = useHistory()
-    const { rainFall, tankWater, sheetName, email } = editor;
+    const [check, setCheck] = useState({ rainFall: [], tankWater: [], sheetName: '', email: '' });
+
+    useEffect(async () => {
+
+        if (editor.length === 0) {
+            const { data } = await Axios.get(`/editorFetch/${cookies.EditorID}`)
+            setEditor(data);
+            const { rainFall, tankWater, sheetName, email } = data;
+            setCheck({
+                ...check,
+                ['rainFall']: rainFall,
+                ['tankWater']: tankWater,
+                ['sheetName']: sheetName,
+                ['email']: email
+            })
+
+            setFormData({
+                ...formData,
+                ['stationName']: `${rainFall[0] ? 'rainFall' : 'tankWater'}`
+            })
+        }
+
+        setLoad(false)
+    }, [editor])
 
     const handleLogout = () => {
         setUser('')
@@ -84,16 +107,7 @@ const Editor = () => {
             [e.target.name]: e.target.value.trim()
         })
     }
-    useEffect(async () => {
-        await Axios.get(`/editorFetch/${cookies.EditorID}`).then(({ data }) => {
-            setEditor(data)
-        }).catch(err => console.error(err));
-        setFormData({
-            ...formData,
-            ['stationName']: 'rainFall'
-        })
-        setLoad(false)
-    }, [])
+
     const handleClose = () => {
         setOpen(false)
         setOpenTank(false)
@@ -113,7 +127,7 @@ const Editor = () => {
     const RainList = forwardRef(
         (props, ref) => {
             return <div>
-                {sheetName.map(x => (
+                {check.sheetName.map(x => (
                     x.split('-')[1].trim() === "rainFall" && <MenuItem {...ref} {...props} onClick={handleCloseMenu} key={uuid()} {...props} >{x.split('-')[0].trim()} </MenuItem>
                 ))}
             </div>
@@ -124,7 +138,7 @@ const Editor = () => {
     const TankList = forwardRef(
         (props, ref) => {
             return <div>
-                {sheetName.map(x => (
+                {check.sheetName.map(x => (
                     x.split('-')[1].trim() === "tankWater" &&
                     <MenuItem onClick={handleCloseMenu} key={uuid()} {...ref} {...props} >{x.split('-')[0].trim()} </MenuItem>
 
@@ -156,7 +170,7 @@ const Editor = () => {
             {!load &&
                 <form action="#" method="post" onSubmit={handleSubmit}>
                     <div style={{ marginLeft: '2rem' }} className="drought__radio">
-                        {rainFall[0] ?
+                        {check.rainFall[0] ?
                             <div className="drought__radio__group">
                                 <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='rainFall' name="stationName" id="rainFall" />
                                 <label htmlFor="rainFall" className='radio__label'>
@@ -164,12 +178,12 @@ const Editor = () => {
                                     RainFall
                                 </label>
                             </div> : null}
-                        {tankWater[0] ?
+                        {check.tankWater[0] ?
 
                             <div className="drought__radio__group">
                                 <input onClick={handleCheckTwo} onChange={handleData} className='radio' type="radio" value='tankWater' name="stationName" id="tankWater" />
                                 <label htmlFor="tankWater" className='radio__label'>
-                                    {rainFall[0] ?
+                                    {check.rainFall[0] ?
                                         <span className="radio__btn"></span>
                                         :
                                         <span className="radio__btn checkTwo radio__selected"></span>
@@ -212,7 +226,7 @@ const Editor = () => {
                                 </Menu>
                             </div>
                             <div className="btn__box">
-                                <button aria-current={rainFall[1]} type='submit' aria-label='rainFall' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
+                                <button aria-current={check.rainFall[1]} type='submit' aria-label='rainFall' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
                             </div>
                         </div>
                     }
@@ -246,13 +260,13 @@ const Editor = () => {
                                 </Menu>
                             </div>
                             <div className="btn__box">
-                                <button aria-current={tankWater[1]} type='submit' aria-label='tankWater' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
+                                <button aria-current={check.tankWater[1]} type='submit' aria-label='tankWater' id='submit' className='m-top admin__btn'><img className='admin__btn__img' src={addUser} alt="addUser" /> Submit</button>
                             </div>
                         </div>
                     }
                     {formData['stationName'] === 'addedList' &&
                         <>
-                            <Rainfall sheetList={sheetName} rainCheck={rainFall[0]} tankCheck={tankWater[0]} email={email} id={cookies.EditorID} />
+                            <Rainfall sheetList={check.sheetName} rainCheck={check.rainFall[0]} tankCheck={check.tankWater[0]} email={check.email} id={cookies.EditorID} />
                         </>
                     }
                 </form>

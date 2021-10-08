@@ -31,7 +31,7 @@ const Rainfall = () => {
     const classes = useStyles()
     const [apiData, setApiData] = useState([])
     const [value, setValue] = React.useState('January');
-    const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1xpm1j5pulQFL4GPeU8LLsp74UeHymHytJEO1olDCzn0/export?format=xlsx')
+    const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1z_GnYRfXM-KveUH0sFe73hfIZwdhnoxW4FRM4f2xA7g/export?format=xlsx')
     const [data, setData] = useState([])
 
     useEffect(async () => {

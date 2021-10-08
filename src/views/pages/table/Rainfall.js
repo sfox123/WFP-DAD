@@ -34,40 +34,39 @@ const useStyles = makeStyles({
 export default function Rainfall(props) {
   const { id, sheetList, email, rainCheck, tankCheck } = props;
   const classes = useStyles();
-  const [load, setLoad] = useState(true);
+  const [load, setLoad] = useState(false);
   const [apiData, setApiData] = useState([]);
-  const [rain, setRain] = useState(true);
-  const [tank, setTank] = useState(false);
+  const [rain, setRain] = useState(rainCheck ? true : false);
+  const [tank, setTank] = useState(rainCheck ? false : true);
   const [rows, setRows] = useState([]);
   const [cols, setCols] = useState([]);
-  const [title, setTitle] = useState("Rainfall");
   const [anchorEl, setAnchorEl] = useState(null);
   const [sheet, setSheet] = useState({ rain: [], tank: [] });
   const { rainfall } = apiData;
 
   useEffect(async () => {
-    await sheetList.map((x, i) => {
-      let value = x.split("-")[1].trim();
-      if (value == "rainFall") {
-        sheet.rain.push(x.split("-")[0].trim());
-      } else if (value == "tankWater") {
-        sheet.tank.push(x.split("-")[0].trim());
-      }
-    });
-
-    if (apiData.length === 0) {
-      const { data } = await Axios.post("/getRecords", {
-        id: id,
-        sheetList: sheet,
+    if (sheet.rain.length === 0 || sheet.tank.length === 0) {
+      await sheetList.map((x, i) => {
+        let value = x.split("-")[1].trim();
+        if (value == "rainFall") {
+          sheet.rain.push(x.split("-")[0].trim());
+        } else if (value == "tankWater") {
+          sheet.tank.push(x.split("-")[0].trim());
+        }
       });
+    }
 
-      const { rainfall, tankwater } = data;
+    const { data } = await Axios.post("/getRecords", {
+      id: id,
+      sheetList: sheet,
+    });
+    const { rainfall, tankwater } = data;
+    setApiData(data);
+    const tmp = [];
+    const arr = [];
 
-      setApiData(data);
-
-      const tmp = [];
-      const arr = [];
-
+    if (rows.length === 0) {
+      // const { rainfall } = apiData;
       if (rainCheck) {
         rainfall.map((x, i) => {
           if (Object.keys(x).length > 5) {
@@ -84,32 +83,35 @@ export default function Rainfall(props) {
             });
           }
         });
-
         setRows(tmp);
-        if (tankCheck) {
-          tankwater.map((x, i) => {
-            let length = Object.keys(x).length;
-            if (Object.keys(x).length > 5) {
-              Object.keys(x).map((key, index) => {
-                if (index > 4) {
-                  if (email == x[index][4]) {
-                    arr.push({
-                      ["wLevel"]: x[index][2],
-                      ["wCapacity"]: x[index][3],
-                      ["dateMeasured"]: x[index][0],
-                      ["dateRecorded"]: x[index][1],
-                    });
-                  }
-                }
-              });
-            }
-          });
-        }
       }
-      setCols(arr);
+    }
+    if (cols.length === 0) {
+      // const { tankwater } = apiData;
+      // console.log(tankwater);
+      if (tankCheck) {
+        tankwater.map((x, i) => {
+          let length = Object.keys(x).length;
+          if (Object.keys(x).length > 5) {
+            Object.keys(x).map((key, index) => {
+              if (index > 4) {
+                if (email == x[index][4]) {
+                  arr.push({
+                    ["wLevel"]: x[index][2],
+                    ["wCapacity"]: x[index][3],
+                    ["dateMeasured"]: x[index][1],
+                    ["dateRecorded"]: x[index][0],
+                  });
+                }
+              }
+            });
+          }
+        });
+        setCols(arr);
+      }
     }
     setLoad(false);
-  }, [apiData]);
+  }, [sheet, rows, cols]);
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -120,33 +122,14 @@ export default function Rainfall(props) {
     if (value == "rain") {
       setRain(true);
       setTank(false);
-      setTitle("Rainfall");
     } else if (value == "tank") {
       setTank(true);
       setRain(false);
-      setTitle("Tank-Water");
     }
 
     setAnchorEl(null);
   };
-  function handleDelete() {
-    if (rows.length != 0) {
-      console.log(rows);
-    } else {
-      setTimeout(() => {
-        console.log(rows);
-      }, 2000);
-    }
-  }
-  function handleRemove() {
-    var date = new Date();
-    var myDate = new Date(cols[0].dateMeasured).setHours(1);
-    console.log(myDate);
-    console.log(date);
-    if (date > myDate) {
-      console.log(true);
-    }
-  }
+
   return (
     <>
       {load ? (
@@ -166,7 +149,7 @@ export default function Rainfall(props) {
               aria-haspopup="true"
               onClick={handleOpen}
             >
-              {title}
+              {rainCheck ? "Rainfall" : "tankwater"}
             </Button>
             <Menu
               id="simple-menu"
@@ -198,15 +181,6 @@ export default function Rainfall(props) {
                     <TableCell>Rainfall (mm)</TableCell>
                     <TableCell align="right">Date Measured</TableCell>
                     <TableCell align="right">Date Recorded</TableCell>
-                    <TableCell align="right">
-                      <Button
-                        onClick={handleDelete}
-                        variant="fill"
-                        style={{ backgroundColor: "red", color: "white" }}
-                      >
-                        Delete Last Record
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -235,16 +209,6 @@ export default function Rainfall(props) {
                     <TableCell>Water Capacity (Ac.ft)</TableCell>
                     <TableCell align="right">Date Measured</TableCell>
                     <TableCell align="right">Date Recorded</TableCell>
-                    <TableCell align="right">
-                      {" "}
-                      <Button
-                        onClick={handleRemove}
-                        variant="fill"
-                        style={{ backgroundColor: "red", color: "white" }}
-                      >
-                        Delete Last Record
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
