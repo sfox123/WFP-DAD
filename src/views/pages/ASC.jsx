@@ -32,7 +32,7 @@ const ASC = () => {
     const [fileInput, setFileInput] = useState('')
     const [size, setSize] = useState('')
     const [Listsheet, setList] = useState([])
-    const [cookies, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
+    const [cookies, setCookies, removeCookie] = useCookies(['isLoggedinASC', 'AscID'])
     const provideHistory = useHistory()
     const password = uuid().split('-')[0]
 
@@ -41,10 +41,10 @@ const ASC = () => {
         tamil.classList.contains('radio__selected') && tamil.classList.remove('radio__selected')
     }
     const handleLogout = async () => {
-        await removeCookie('isLoggedinASC')
-        await removeCookie('AscID')
+        removeCookie('isLoggedinASC')
+        removeCookie('AscID')
         await setUser('')
-        await provideHistory.push('/')
+        provideHistory.push('/')
     }
 
     const handleData = (e) => {

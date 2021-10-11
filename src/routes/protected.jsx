@@ -4,7 +4,7 @@ import { ApiContext } from '../context/ApiContext'
 import { useCookies } from 'react-cookie';
 
 export const Protected = ({ component: Component, ...rest }) => {
-  const [cookies] = useCookies(['isLoggedin']);
+  const [cookies] = useCookies(['isLoggedinAdmin']);
   const { user } = useContext(ApiContext)
   const { level } = user;
   return (

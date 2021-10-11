@@ -13,13 +13,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Axios from '../../api/api'
 
 export default function FormDialog(props) {
-    const { open, setOpen, name, passWord, Id } = props
+    const { open, setOpen, name, passWord, Id, model } = props
     const [showPassword, setShowPassword] = useState(false)
     const [password, setPassword] = useState('')
 
     const updateHandler = async (e) => {
         e.preventDefault()
-        await Axios.post(`/users/${name}`, { 'password': password }).then(({ data }) => {
+        await Axios.post(`/users/${name}`, { 'password': password, 'model': model }).then(({ data }) => {
             window.location.reload();
         }).catch(err => console.error(err))
     }

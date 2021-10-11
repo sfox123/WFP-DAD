@@ -67,11 +67,11 @@ const Editor = () => {
         setLoad(false)
     }, [editor])
 
-    const handleLogout = () => {
-        setUser('')
-        provideHistory.push('/')
+    const handleLogout = async () => {
+        await setUser('')
         removeCookie('isLoggedinEditor')
         removeCookie('EditorID')
+        provideHistory.push('/')
     }
     const handleInfo = async () => {
         setLoader(true)

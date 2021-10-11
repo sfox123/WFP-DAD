@@ -157,7 +157,7 @@ const Admin = props => {
 
     return (
         <>
-            <User name={user} passWord={passWord} open={open} setOpen={setOpen} />
+            <User name={user} passWord={passWord} model='admin' open={open} setOpen={setOpen} />
             <div className="asc__container">
                 <div className="asc__nav">
                     <h1 className='asc__nav__heading'>Welcome </h1>
