@@ -24,11 +24,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 //https://docs.google.com/spreadsheets/d/1z_GnYRfXM-KveUH0sFe73hfIZwdhnoxW4FRM4f2xA7g/export?format=xlsx
 const mS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const mY = ['2021', '2022', '2023', '2024', '2025']
 const url = 'https://docs.google.com/spreadsheets/d/1QzLYOrijo-dZJNh9Qs_jiB1RuruGsljyYYqRXoSQ3ms/export?format=xlsx';
 const Tank = () => {
     const classes = useStyles()
     const [apiData, setApiData] = useState([])
     const [value, setValue] = React.useState('January');
+    const [valueYear, setValueYear] = React.useState('2021');
     const [data, setData] = useState([])
 
     useEffect(async () => {
@@ -70,6 +72,28 @@ const Tank = () => {
         setData(tmpArr);
     };
 
+    const handleChangeYear = (event) => {
+        let tmpArr = [];
+        const val = event.target.value
+        let index = mY.indexOf(val);
+
+        setValueYear(val);
+        if (index > 0) {
+            alert("The Year Exceeding Current year")
+            setValueYear('2021')
+        }
+        // apiData.map((x, i) => {
+        //     tmpArr.push(['Station-Name', `${val}`]);
+        //     x.map((y, z) => {
+        //         if (z > 0) {
+        //             tmpArr.push([y[0], parseInt(y[(index) + 3])])
+        //         }
+        //     })
+        // })
+        // setData(tmpArr);
+    };
+
+
     return (
         <div className="section">
             <div className="section__title__box">
@@ -87,6 +111,20 @@ const Tank = () => {
                         onChange={handleChange}
                     >
                         {mS.map((x, i) => (
+                            <MenuItem key={i} value={x}>{x}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl, classes.marginBottom}>
+                    <InputLabel id="demo-simple-select-label">Year</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={valueYear}
+                        label='January'
+                        onChange={handleChangeYear}
+                    >
+                        {mY.map((x, i) => (
                             <MenuItem key={i} value={x}>{x}</MenuItem>
                         ))}
                     </Select>

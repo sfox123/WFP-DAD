@@ -25,14 +25,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const mS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
+const mY = ['2021', '2022', '2023', '2024', '2025']
 
 const Rainfall = () => {
     const classes = useStyles()
     const [apiData, setApiData] = useState([])
-    const [value, setValue] = React.useState('January');
+    const [valueYear, setValueYear] = React.useState('2021');
     const [url, setUrl] = useState('https://docs.google.com/spreadsheets/d/1z_GnYRfXM-KveUH0sFe73hfIZwdhnoxW4FRM4f2xA7g/export?format=xlsx')
-    const [data, setData] = useState([])
+    const [data, setData] = useState([]);
+    const [menuItem, setMenuItem] = useState([]);
+    const [value, setValue] = React.useState('Station-Name');
+    const [item, setItem] = useState([]);
 
     useEffect(async () => {
         let dataArr = [];
@@ -44,7 +47,7 @@ const Rainfall = () => {
 
         if (data.length === 0) {
             apiData.map((x, i) => {
-                tmpArr.push(['Station-Name', `Total (mm)`]);
+                tmpArr.push(['Month', `Station-Name`]);
                 x.map((y, z) => {
                     if (z > 0) {
                         tmpArr.push([y[0], parseInt(y[3])]);
@@ -54,24 +57,63 @@ const Rainfall = () => {
             setData(tmpArr);
         }
 
-    }, [apiData, data])
+        if (menuItem.length === 0) {
+            let menuArr = [];
+            let MonthArr = [];
+            apiData.map((x, i) => {
+                x.map((y, z) => {
+                    if (z > 0) {
+                        menuArr.push(y[0]);
+                        y.map((o, p) => {
+                            if (p > 2 && y[0] === menuArr[0]) {
+                                MonthArr.push([mS[p - 3], parseInt(o)]);
+                            }
+                        })
+                    }
+                })
+            })
+            setValue(menuArr[0])
+            MonthArr.unshift([`Month`, menuArr[0]])
+            setItem(MonthArr);
+            setMenuItem(menuArr)
+        }
+
+    }, [apiData, data, menuItem])
 
     const handleChange = (event) => {
-        let tmpArr = [];
         const val = event.target.value
-        let index = mS.indexOf(val);
 
-        setValue(val);
+        let menuArr = [];
+        let MonthArr = [];
         apiData.map((x, i) => {
-            tmpArr.push(['Station-Name', `${val}`]);
             x.map((y, z) => {
                 if (z > 0) {
-                    tmpArr.push([y[0], parseInt(y[(index) + 3])])
+                    menuArr.push(y[0]);
+                    y.map((o, p) => {
+                        if (p > 2 && y[0] === val) {
+                            MonthArr.push([mS[p - 3], parseInt(o)]);
+                        }
+                    })
                 }
             })
         })
-        setData(tmpArr);
+        setValue(val)
+        MonthArr.unshift([`Month`, val])
+        setItem(MonthArr);
     };
+
+    const handleChangeYear = (event) => {
+        let tmpArr = [];
+        const val = event.target.value
+        let index = mY.indexOf(val);
+
+        setValueYear(val);
+        if (index > 0) {
+            alert("The Year Exceeding Current year")
+            setValueYear('2021')
+        }
+    };
+
     return (
         <div className="section">
             <div className="section__title__box">
@@ -80,21 +122,35 @@ const Rainfall = () => {
             </div>
             <div className="content__api">
                 <FormControl className={classes.formControl, classes.marginBottom}>
-                    <InputLabel id="demo-simple-select-label">Month</InputLabel>
+                    <InputLabel id="demo-simple-select-label">Station Name</InputLabel>
                     <Select
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
                         value={value}
-                        label='January'
+                        label='Station Name'
                         onChange={handleChange}
                     >
-                        {mS.map((x, i) => (
+                        {menuItem.map((x, i) => (
+                            <MenuItem key={i} value={x}>{x}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl, classes.marginBottom}>
+                    <InputLabel id="demo-simple-select-label">Year</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={valueYear}
+                        label='January'
+                        onChange={handleChangeYear}
+                    >
+                        {mY.map((x, i) => (
                             <MenuItem key={i} value={x}>{x}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
                 <Button href={url} variant='contained' style={{ marginLeft: '2rem', marginTop: '1rem' }} color='primary'>Download Sheet</Button>
-                <BarChart data={data} title='Rainfall - Measurements' />
+                <BarChart data={item} title='Rainfall - Measurements' />
                 {/* <div className="content__national">
                     <div className="content__picture content__picture__1">
                         &nbsp;

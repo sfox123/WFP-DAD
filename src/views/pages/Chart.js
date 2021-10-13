@@ -6,7 +6,7 @@ export default function BarChart(props) {
   return (
     <div>
       <Chart
-        width={"500px"}
+        width={"1000px"}
         height={"300px"}
         chartType="Bar"
         loader={<div>Loading Chart</div>}
